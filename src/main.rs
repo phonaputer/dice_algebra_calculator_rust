@@ -1,5 +1,7 @@
 use std::io::Write;
 
+mod lexer;
+
 fn main() {
     print!("Please enter a dice algebra expression: ");
     if let Err(err) = std::io::stdout().flush() {
@@ -14,5 +16,16 @@ fn main() {
     };
     let input = input_buffer.trim_end();
 
-    println!("You wrote: {input}!");
+    match lexer::tokenize(input) {
+        Ok(tokens) => {
+            println!("\nFound the following tokens...");
+            for token in tokens {
+                println!("Token: {:?}, Integer: {}", token.token_type, token.integer);
+            }
+        }
+        Err(err) => {
+            eprintln!("Error! {}", err.message);
+            std::process::exit(1);
+        }
+    };
 }
