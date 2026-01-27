@@ -1,5 +1,7 @@
 use std::io::Write;
 
+mod ast;
+mod dice_error;
 mod lexer;
 
 fn main() {

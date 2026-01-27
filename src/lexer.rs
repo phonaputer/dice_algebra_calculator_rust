@@ -1,5 +1,4 @@
-use std::error::Error;
-use std::fmt;
+use crate::dice_error::DiceError;
 
 #[derive(Debug)]
 pub enum TokenType {
@@ -20,28 +19,7 @@ pub struct Token {
     pub integer: u64,
 }
 
-#[derive(Debug)]
-pub struct LexingError {
-    pub message: String,
-}
-
-impl LexingError {
-    fn new(message: &str) -> LexingError {
-        LexingError {
-            message: message.to_string(),
-        }
-    }
-}
-
-impl fmt::Display for LexingError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        return write!(f, "{}", self.message);
-    }
-}
-
-impl Error for LexingError {}
-
-pub fn tokenize(input: &str) -> Result<Vec<Token>, LexingError> {
+pub fn tokenize(input: &str) -> Result<Vec<Token>, DiceError> {
     let mut ongoing_integer = String::new();
     let mut results: Vec<Token> = Vec::new();
 
@@ -62,7 +40,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, LexingError> {
                 None
             }
             _ => {
-                return Err(LexingError::new(&format!("Unexpected character: {}", char)));
+                return Err(DiceError::new(&format!("Unexpected character: {}", char)));
             }
         };
 
@@ -79,7 +57,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, LexingError> {
                     });
                 }
                 Err(e) => {
-                    return Err(LexingError::new(&format!("Unexpected error: {}", e)));
+                    return Err(DiceError::new(&format!("Unexpected error: {}", e)));
                 }
             };
 
@@ -101,7 +79,7 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, LexingError> {
                 });
             }
             Err(e) => {
-                return Err(LexingError::new(&format!("Unexpected error: {}", e)));
+                return Err(DiceError::new(&format!("Unexpected error: {}", e)));
             }
         };
     }
