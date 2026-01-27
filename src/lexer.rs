@@ -1,6 +1,6 @@
 use crate::dice_error::DiceError;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum TokenType {
     D,
     KeepHigh,

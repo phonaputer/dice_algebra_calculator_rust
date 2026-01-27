@@ -1,10 +1,21 @@
+use std::env;
 use std::io::Write;
+
+use crate::{ast::ASTExecutable, dice_error::DiceError};
 
 mod ast;
 mod dice_error;
 mod lexer;
+mod parser;
 
 fn main() {
+    let mut verbose = false;
+    if let Some(arg) = env::args().nth(1)
+        && arg == "--v"
+    {
+        verbose = true;
+    }
+
     print!("Please enter a dice algebra expression: ");
     if let Err(err) = std::io::stdout().flush() {
         eprintln!("Error: Failed to flush stdout buffer: {err}");
@@ -18,16 +29,23 @@ fn main() {
     };
     let input = input_buffer.trim_end();
 
-    match lexer::tokenize(input) {
-        Ok(tokens) => {
-            println!("\nFound the following tokens...");
-            for token in tokens {
-                println!("Token: {:?}, Integer: {}", token.token_type, token.integer);
-            }
-        }
-        Err(err) => {
-            eprintln!("Error! {}", err.message);
-            std::process::exit(1);
-        }
-    };
+    if let Err(err) = run(input, verbose) {
+        eprintln!("Error! {}", err.message);
+        std::process::exit(1);
+    }
+}
+
+fn run(input: &str, verbose: bool) -> Result<(), DiceError> {
+    let tokens = lexer::tokenize(input)?;
+
+    let ast = parser::parse(&tokens)?;
+
+    let result = ast.execute_ast(&mut rand::rng())?;
+
+    if verbose {
+        print!("{}", result.description);
+    }
+    println!("\nYour result is: {}", result.result);
+
+    return Ok(());
 }

@@ -120,7 +120,7 @@ impl ASTExecutable for LongRollAST {
 impl ASTExecutable for MathAST {
     fn execute_ast(&self, rng: &mut impl rand::Rng) -> Result<ASTExecutionResult, DiceError> {
         let left = self.left.execute_ast(rng)?;
-        let right = self.left.execute_ast(rng)?;
+        let right = self.right.execute_ast(rng)?;
 
         let result = match self.operation {
             MathOperation::Add => left.result + right.result,
@@ -137,7 +137,7 @@ impl ASTExecutable for MathAST {
 
         return Ok(ASTExecutionResult {
             result: result,
-            description: format!("{}\n{}", left.description, right.description),
+            description: format!("{}{}", left.description, right.description),
         });
     }
 }
