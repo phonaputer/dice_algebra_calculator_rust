@@ -98,3 +98,5 @@ Your result is: 14
 ## Retrospective Thoughts
 
 ... coming soon ...
+
+Rust is 568 lines, excluding unit tests.
