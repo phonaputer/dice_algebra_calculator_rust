@@ -261,3 +261,297 @@ fn validate_parenthesis(tokens: &[Token]) -> Result<(), DiceError> {
 
     return Ok(());
 }
+
+#[cfg(test)]
+#[allow(non_snake_case)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse__empty_input__returns_error() {
+        let input: Vec<Token> = Vec::new();
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__more_open_than_closed_parens__returns_error() {
+        let input: Vec<Token> = vec![Token {
+            token_type: TokenType::OpenParenthesis,
+            integer: 0,
+        }];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!(
+                    "Expression contains an unclosed parenthetical.",
+                    err.message
+                )
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__more_closed_than_open_parens__returns_error() {
+        let input: Vec<Token> = vec![Token {
+            token_type: TokenType::CloseParenthesis,
+            integer: 0,
+        }];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!(
+                    "Expression contains an unclosed parenthetical.",
+                    err.message
+                )
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__mismatched_parens__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::CloseParenthesis,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::OpenParenthesis,
+                integer: 0,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__add_with_no_left_operand__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Add,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__add_with_no_right_operand__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Add,
+                integer: 0,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__multiply_with_no_left_operand__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Multiply,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__multiply_with_no_right_operand__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Multiply,
+                integer: 0,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__short_roll_with_no_faces__returns_error() {
+        let input: Vec<Token> = vec![Token {
+            token_type: TokenType::D,
+            integer: 10,
+        }];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__long_roll_with_no_faces__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 10,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__long_roll_with_no_keep_high__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 10,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__long_roll_with_no_keep_low__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 10,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn parse__long_roll_with_keep_high_and_keep_low__returns_error() {
+        let input: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::KeepLow,
+                integer: 10,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 10,
+            },
+        ];
+
+        match parse(&input) {
+            Err(err) => {
+                assert_eq!("Invalid expression.", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+}

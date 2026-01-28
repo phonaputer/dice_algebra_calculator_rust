@@ -49,3 +49,30 @@ fn run(input: &str, verbose: bool) -> Result<(), DiceError> {
 
     return Ok(());
 }
+
+#[cfg(test)]
+#[allow(non_snake_case)]
+mod tests {
+    use super::*;
+    use rand::SeedableRng;
+
+    #[test]
+    fn run__big_ol_roll_with_all_the_fixings__returns_correct_result() {
+        let input = "d5 + 2d6h1 - 3d100l2 + (10 - 2 * 2) / 2";
+        let mut rng = rand_chacha::ChaCha12Rng::seed_from_u64(1);
+
+        let tokens = lexer::tokenize(input).unwrap();
+        let tree = parser::parse(&tokens).unwrap();
+        let result = tree.execute_ast(&mut rng).unwrap();
+
+        assert_eq!(-33, result.result);
+        assert_eq!(
+            concat!(
+                "\nRolling d5...\nYou rolled: 4\n",
+                "\nRolling 2d6...\nYou rolled: 4\nYou rolled: 3\n",
+                "\nRolling 3d100...\nYou rolled: 18\nYou rolled: 26\nYou rolled: 96\n"
+            ),
+            result.description
+        );
+    }
+}

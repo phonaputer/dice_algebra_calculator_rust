@@ -14,6 +14,7 @@ pub enum TokenType {
     Integer,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Token {
     pub token_type: TokenType,
     pub integer: u64,
@@ -85,4 +86,174 @@ pub fn tokenize(input: &str) -> Result<Vec<Token>, DiceError> {
     }
 
     return Ok(results);
+}
+
+#[cfg(test)]
+#[allow(non_snake_case)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tokenize_emptyInput_returnsEmptyVector() {
+        let input = "";
+
+        let result = tokenize(input).unwrap();
+
+        assert_eq!(0, result.len());
+    }
+
+    #[test]
+    fn tokenize_inputOnlyWhitespace_returnsEmptyVector() {
+        let input = " \n\r\t";
+
+        let result = tokenize(input).unwrap();
+
+        assert_eq!(0, result.len());
+    }
+
+    #[test]
+    fn tokenize_inputUnexpectedCharacter_returnsDiceError() {
+        let input = "k";
+
+        match tokenize(input) {
+            Err(err) => {
+                assert_eq!("Unexpected character: k", err.message)
+            }
+            Ok(_) => assert!(false, "Should have returned an error"),
+        }
+    }
+
+    #[test]
+    fn tokenize_inputValidCharacters_returnsMatchingTokensForEach() {
+        let input = "100dD1+-*/()lLhH";
+
+        let result = tokenize(input).unwrap();
+
+        let expected: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 100,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 1,
+            },
+            Token {
+                token_type: TokenType::Add,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Subtract,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Multiply,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Divide,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::OpenParenthesis,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::CloseParenthesis,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepLow,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepLow,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 0,
+            },
+        ];
+        assert_eq!(expected, result);
+    }
+
+    #[test]
+    fn tokenize_inputValidCharactersWithWhitespace_returnsMatchingTokensIgnoringWhitespace() {
+        let input = "100 \n\r\td \n\r\tD \n\r\t1 \n\r\t+ \n\r\t- \n\r\t* \n\r\t/ \n\r\t( \n\r\t) \n\r\tl \n\r\tL \n\r\th \n\r\tH";
+
+        let result = tokenize(input).unwrap();
+
+        let expected: Vec<Token> = vec![
+            Token {
+                token_type: TokenType::Integer,
+                integer: 100,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::D,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Integer,
+                integer: 1,
+            },
+            Token {
+                token_type: TokenType::Add,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Subtract,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Multiply,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::Divide,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::OpenParenthesis,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::CloseParenthesis,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepLow,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepLow,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 0,
+            },
+            Token {
+                token_type: TokenType::KeepHigh,
+                integer: 0,
+            },
+        ];
+        assert_eq!(expected, result);
+    }
 }
