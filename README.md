@@ -1,4 +1,4 @@
-# Dice Algebra Calculator - Written in Zig
+# Dice Algebra Calculator - Written in Rust
 
 A dice algebra expression lexer, parser, & executor written in Rust. 
 
@@ -89,14 +89,47 @@ Your result is: 14
 
 ## How to Build Locally
 
-... coming soon ...
+The `dice_algebra_calculator` binary can be compiled by executing the following command in the root directory of this repository.
+
+```
+cargo build --release
+```
+
+This will output the binary file in the `./target/release` directory.
 
 ## How to Run the Unit Tests
 
-... coming soon ...
+The unit tests can be run by executing the following command in the root directory of this repository.
+
+```
+cargo test
+```
 
 ## Retrospective Thoughts
 
-... coming soon ...
+For this toy project I found Rust to be easier to work with than C or Zig, and similar to C++.
 
-Rust is 568 lines, excluding unit tests.
+In Rust's favor, the thing I found the best was the toolchain. 
+Compiling and linking using CMake was verbose, but not too bad.
+But managing external dependencies through Cargo is just miles better than the situation for C++.
+C++ really needs a "Maven Central" and the current options of Conan and Vcpkg don't quite measure up as far as I've tested them.
+I would almost use Rust over C++ just for this.
+The other thing Rust has which I really like is compile-time checking of switch (match) exhaustiveness. 
+I wish more languages had this feature (thank you Java 14) since I find it very useful.
+I didn't run into the "fighting with the borrow checker" problem people seem to be encountering, so the borrow checking feature was entirely a positive (it saved me the time of Valgrind-ing the program to hunt down memory leaks).
+
+In C++'s favor, I feel it has better object oriented programming faculties.
+Rust's traits provide a similar but seemingly more limited functionality.
+For example, I ran into an issue where the `ASTExecutable` trait apparently cannot be used with dynamic dispatch (due to having a function which takes a dyn-incompatible trait as an argument). 
+So I had to use a discriminated union in order to allow the `Math` node to have children which are `ASTExecutable`.
+Maybe there's a great workaround for this, but I did not find it in the limited time I spent writing this code.
+C++ seems to have more powerful features overall, but also more ways to screw up.
+These footguns were seemingly easy to avoid, but I suspect that maintaining legacy code or a big project with poor standardization would be quite a bit different from this one-dev, greenfield toy project.
+
+At the end of the day, both languages were pleasant to work with and I could see using either one for a PROD project.
+If I was working with mainly junior devs, or on a product where security is an important concern (actually, when isn't it?), I'd pick Rust. 
+Otherwise I might pick C++ just for those object oriented features.
+
+For comparison, this Rust code is 568 lines (excluding unit tests), the Zig code was 701 lines, C++ was 716, and C was 1456.
+
+My preference for the languages I've used so far is: C++ == Rust > Zig >> C. I'd lean more toward C++ syntax-wise but more towards Rust toolchain-wise.
